@@ -28,8 +28,69 @@ void add_history(char* unused){}
 #include <editline/history.h>
 #endif
 
+/* Create Enumeration of Possible lval types */
+enum { LVAL_NUM, LVAL_ERR };
+
+/* Create Enumeration of Possible Error Types */
+enum { LERR_DIV_ZERO, LERR_BAD_OP, LERR_BAD_NUM };
+
+/* Declare New lval Structure */
+typedef struct {
+  int type;
+  int num;
+  int err;
+} lval;
+
+/* Create a new number type lval */
+lval lval_num(long x) {
+  lval v;
+  v.type = LVAL_NUM;
+  v.num = x;
+  return v;
+}
+
+/* Create a new error type lval */
+lval lval_err(int x) {
+  lval v;
+  v.type = LVAL_ERR;
+  v.err = x;
+  return v;
+}
+
+/* Print an "lval" */
+void lval_print(lval v) {
+  switch (v.type) {
+    /* In the case the type is a number print it */
+    /* Then 'break' out of the switch. */
+  case LVAL_NUM: printf("%d", v.num); break;
+
+    /* In the case the type is an error */
+  case LVAL_ERR:
+    /* Check what type of error it is and print it */
+    if (v.err == LERR_DIV_ZERO) {
+      printf("Error: Division By Zero!");
+    }
+    if (v.err == LERR_BAD_OP)   {
+      printf("Error: Invalid Operator!");
+    }
+    if (v.err == LERR_BAD_NUM)  {
+      printf("Error: Invalid Number!");
+    }
+    break;
+
+
+
+  }
+}
+
+
 /* Use operator string to see which operation to perform */
-long eval_op(long x, char *op, long y) {
+lval eval_op(lval x, char *op, lval y) {
+  /* If either value is an error return it */
+  if (x.type == LVAL_ERR) { return x; }
+  if (y.type == LVAL_ERR) { return y; }
+
+  /* Otherwise do maths on the number values */
   if (strcmp(op, "+") == 0) { return x + y; }
   if (strcmp(op, "-") == 0) { return x - y; }
   if (strcmp(op, "*") == 0) { return x * y; }
@@ -76,7 +137,7 @@ int main(int argc, char ** argv) {
 
 
      /* Print Version and Exit Information */
-     puts("Lispy Version 0.0.0.0.2");
+     puts("Lispy Version 0.0.0.0.3");
      puts("Press Ctrl+c to Exit\n");
 
 
